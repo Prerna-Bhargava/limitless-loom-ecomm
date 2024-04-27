@@ -105,7 +105,7 @@ function Navbar() {
             <DesktopNav categories={categories} />
           </Flex>
 
-          {!auth?.user && !auth.user.admin == 1 &&
+          {auth?.user && auth.user.admin == 1 &&
             <Box onClick={() => setVisible(true)}>
               <Text onClick={() => {navigate("/admin")}} _hover={{
                 "cursor": "pointer"

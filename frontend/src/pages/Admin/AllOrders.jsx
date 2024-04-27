@@ -38,6 +38,7 @@ import { useTable, useSortBy } from "react-table";
 import dayjs from "dayjs";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/auth";
 
 function AllOrders() {
 
@@ -48,6 +49,7 @@ function AllOrders() {
   const [selectedData, setSelectedData] = useState({})
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [status, setStatus] = useState()
+  const [auth] = useAuth()
 
   let data = filteredProducts;
 
@@ -61,11 +63,16 @@ function AllOrders() {
 
   const handleUpdate = async (e) => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
       const { data } = await axios.put(
         `order/${selectedData.id}`,
         {
           status
-        }
+        }, config
       );
       if (data?.success) {
         toast.success(`Updated success`);
@@ -82,7 +89,12 @@ function AllOrders() {
   //get all cat
   const getAllOrders = async () => {
     try {
-      const { data } = await axios.get("order/list");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
+      const { data } = await axios.get("order/list", config);
       if (data?.success) {
         setProducts(data?.orders);
         setFilteredProducts(data?.orders);

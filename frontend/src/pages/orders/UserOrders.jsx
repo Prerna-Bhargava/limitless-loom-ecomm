@@ -1,12 +1,47 @@
 import { Box, Button, Center, Flex, Grid, Heading, Image, Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Stack, Text, calc, useDisclosure } from '@chakra-ui/react'
-import React from 'react'
+import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
 import { useCart } from '../../context/cart'
 import { Link as RouterLink } from "react-router-dom";
 import { calculateTotalPrice } from '../../utils/Utils'
+import { StarIcon } from '@chakra-ui/icons'
+import axios from 'axios'
+import { useAuth } from '../../context/auth'
 
 function UserOrders({ Product }) {
+
+    const [rating, setRating] = useState(Product.rating)
+    const [auth] = useAuth();
+
+    const handleStarClick = (clickedRating) => {
+        setRating(clickedRating);
+        updateRating(clickedRating); // Call the parent component's callback with the new rating
+    };
+
+    const updateRating = async (clickedRating) => {
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+                }
+            }
+            const { data } = await axios.put(
+                `order/rating/${Product.id}`,
+                {
+                    rating: clickedRating
+                }, config
+            );
+            if (data?.success) {
+                toast.success(`Product Rated!`);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+    };
 
 
     return (
@@ -70,6 +105,23 @@ function UserOrders({ Product }) {
 
             </Stack>
 
+
+            {Product.status == "delivered" && <Box display='flex' mt='3' alignItems='center' mb={3} >
+                {Array(5)
+                    .fill('')
+                    .map((_, i) => (
+
+                        <StarIcon
+                            key={i}
+                            color={i < rating ? 'teal.500' : 'gray.300'}
+                            onClick={() => handleStarClick(i + 1)} // i + 1 because ratings start from 1
+                            cursor="pointer"
+                        />
+                    ))}
+
+
+            </Box>
+            }
 
         </Box>
     )

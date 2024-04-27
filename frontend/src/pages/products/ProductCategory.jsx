@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout/Layout';
 import { useLocation, useParams } from 'react-router-dom';
-import { Box, Button, Divider, Flex, Grid, Heading, Image, Input, Radio, RadioGroup, Spinner, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Grid, Heading, Image, Input, Radio, RadioGroup, Spinner, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { Link as RouterLink } from "react-router-dom";
@@ -124,9 +124,13 @@ function ProductCategory() {
 
   };
 
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
+  const mxValue = useBreakpointValue({ base: 5, md: 20 });
+
+
   return (
     <Layout title={`Products in ${category}`}>
-      <Box textAlign="center" minWidth="300px" mx={20} mb={20} >
+      <Box textAlign="center" minWidth="300px" mx={mxValue} mb={20} >
 
         <Heading as='h2' size='lg' color="teal.800" my={3}>
           {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -137,9 +141,9 @@ function ProductCategory() {
 
         </Box>
 
-        <Flex ml={1}>
+        <Stack direction={isSmallScreen ? "column" : "row"} >
 
-          <Box flex={1}>
+          <Box order={isSmallScreen ? 2 : 1} >
 
             <Box marginLeft="-2rem">
               <Text fontSize={"3xl"}
@@ -203,18 +207,17 @@ function ProductCategory() {
             </Box>
           </Box>
 
-          <Grid flex={3} templateColumns={{
+          <Grid  order={isSmallScreen ? 1 : 2} flex={3} templateColumns={{
             base: "repeat(1, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(4, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
           }} mx="auto" gap={4}>
             {filteredProducts.map((product) => (
               <RouterLink
                 to={`/product/single/${product.id}`}
                 role={"group"}
                 display={"block"}
-                p={2}
+              
                 rounded={"md"}
                 _hover={{ bg: "teal.50" }}
               >
@@ -268,7 +271,7 @@ function ProductCategory() {
               </RouterLink>
             ))}
           </Grid>
-        </Flex>
+        </Stack>
 
       </Box>
     </Layout>

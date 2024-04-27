@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/auth';
 import UserOrders from './UserOrders';
 import { Divider } from '@chakra-ui/react';
+import toast from 'react-hot-toast';
 
 function Myorders() {
 
@@ -14,7 +15,12 @@ function Myorders() {
 
     const getAllOrders = async () => {
         try {
-            const { data } = await axios.get(`order/list/${id}`);
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+                }
+            };
+            const { data } = await axios.get(`order/list/${id}`,config);
             console.log(data.orders)
             if (data?.success) {
                 setProducts(data?.orders);
@@ -22,6 +28,7 @@ function Myorders() {
         } catch (error) {
             console.log(error);
             console.log("Something went wrong in getting orders list");
+            toast.error(error.response.data.message)
         }
     };
 

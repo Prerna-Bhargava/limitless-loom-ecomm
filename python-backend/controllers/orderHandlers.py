@@ -1,6 +1,8 @@
 from flask import jsonify
 from modals.orderModel import Orders 
 from bson import ObjectId  # Import ObjectId from bson
+from modals.productModel import Products as Product
+
 
 def addOrder(request):
     try:
@@ -59,6 +61,59 @@ def update_order(request, id):
         print(f"Error in update_category_controller: {str(e)}")
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500  # 500 Internal Server Error
 
+
+def update_rating(request, id):
+    try:
+        data = request.get_json()
+        rating = data.get('rating')
+
+        print(data)
+
+        category = Orders.objects(id=id).first()
+
+        if not category:
+            return jsonify({'success': False, 'message': 'Order not found'}), 404  # 404 Not Found
+
+       
+        # Update average rating for each product
+        for prod in category.products:
+            print(prod)
+            product = Product.objects(id=ObjectId(prod.id)).first()
+            if category.rating==0:
+                total_ratings = product.rating + rating
+                total_purchased = product.totalPurchased +1
+                average_rating = round(total_ratings / total_purchased )
+                print(average_rating)
+                product.rating = average_rating
+                product.totalPurchased = total_purchased
+                product.save()
+            else:
+                total_ratings = product.rating + rating - category.rating
+                total_purchased = product.totalPurchased
+                average_rating = round(total_ratings / total_purchased )
+                print(average_rating)
+
+                product.rating = average_rating
+                product.totalPurchased = total_purchased
+                product.save()
+
+
+
+        category.rating = rating
+        category.save()
+
+        response = {
+            'success': True,
+            'message': 'Order rating Updated Successfully',
+            'order': category.to_json()
+        }
+
+        return jsonify(response), 200  # 200 OK
+
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print(f"Error in update_category_controller: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500  # 500 Internal Server Error
 
 # Get All Categories
 def get_all_Orders():

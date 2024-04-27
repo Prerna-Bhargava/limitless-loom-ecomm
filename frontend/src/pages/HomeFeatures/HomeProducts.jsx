@@ -11,6 +11,7 @@ import {
   Text,
   Divider,
   Flex,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -22,24 +23,24 @@ import { AiOutlineReload } from "react-icons/ai";
 function HomeProducts() {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
-  
-  const [filteredProduct,setfilterProduct] = useState([])
+
+  const [filteredProduct, setfilterProduct] = useState([])
 
   const [categories, setCategories] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState([]);
   const [priceFilter, setPriceFilter] = useState([]);
 
   const [Prices, setPrices] = useState([
-    { name: 'less than 300', min:0,max:300,array: [0, 300] },
-    { name: '300-1000', min:200, max:500, array: [300, 1000] },
-    { name: '1000-2000', min:200, max:500, array: [1000, 2000] },
-    { name: '2000-5000', min:200, max:500, array: [2000, 5000] },
-    { name: 'Above 5000', min:200, max:500, array: [5000, 10000000] },
+    { name: 'less than 300', min: 0, max: 300, array: [0, 300] },
+    { name: '300-1000', min: 200, max: 500, array: [300, 1000] },
+    { name: '1000-2000', min: 200, max: 500, array: [1000, 2000] },
+    { name: '2000-5000', min: 200, max: 500, array: [2000, 5000] },
+    { name: 'Above 5000', min: 200, max: 500, array: [5000, 10000000] },
   ]);
- 
+
   const [loading, setLoading] = useState(false);
 
-  
+
 
   //get all category
   const getAllCategory = async () => {
@@ -67,10 +68,10 @@ function HomeProducts() {
       const { data } = await axios.post(
         "product/trending",
         {
-          "page":1,
-          "size":10,
-          "category":categoryFilter,
-          "price":priceFilter
+          "page": 1,
+          "size": 12,
+          "category": categoryFilter,
+          "price": priceFilter
         }
       );
       console.log(data)
@@ -84,7 +85,7 @@ function HomeProducts() {
 
 
   useEffect(() => {
-     getAllProducts();
+    getAllProducts();
   }, [priceFilter, categoryFilter]);
 
 
@@ -101,6 +102,9 @@ function HomeProducts() {
 
   };
 
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
+
+
 
   return (
     <>
@@ -108,8 +112,20 @@ function HomeProducts() {
 
       <Box className="home_products_page">
 
-        <Flex>
-          <Box flex={1}>
+        <Stack direction={isSmallScreen ? "column" : "row"}>
+          <Box flex={3}>
+            <Stack direction="column">
+              <Box className="home_products">
+                <Text mt={8} fontSize="2xl" fontWeight="bold">Trending(Most ordered) Products</Text>
+                {filteredProduct?.map((p) => (
+                  <ProductCard p={p} setCart={setCart} cart={cart}></ProductCard>
+                ))}
+              </Box>
+
+            </Stack>
+          </Box>
+
+          <Box >
 
             <Stack p={8}>
               <Text fontSize={"3xl"}
@@ -122,8 +138,8 @@ function HomeProducts() {
                 <Checkbox
                   key={c.id}
                   onChange={(e) => handleCategoryChange(c.slug)
-                  // handleFilter(e.target.checked, c.id)
-                }
+                    // handleFilter(e.target.checked, c.id)
+                  }
                 >
                   {c.name}
                 </Checkbox>
@@ -131,14 +147,14 @@ function HomeProducts() {
               {/* price filter */}
               <Text fontSize="1xl">Filter By Price</Text>
               <Divider />
-              <RadioGroup onChange={(e) => {              
+              <RadioGroup onChange={(e) => {
                 const priceRange = e.split(",").map(Number);
-                setPriceFilter([priceRange[0],priceRange[1]])
+                setPriceFilter([priceRange[0], priceRange[1]])
               }}>
                 <Stack direction="column">
                   {Prices?.map((p) => (
-                <Radio value={p.array.toString()}>{p.name}</Radio>
-              ))}
+                    <Radio value={p.array.toString()}>{p.name}</Radio>
+                  ))}
                 </Stack>
               </RadioGroup>
               <Divider />
@@ -151,18 +167,8 @@ function HomeProducts() {
               </Button>
             </Stack>
           </Box>
-          <Box flex={3}>
-            <Stack direction="column">
-              <Box className="home_products">
-                <Text mt={8} fontSize="2xl" fontWeight="bold">Trending Products</Text>
-                {filteredProduct?.map((p) => (
-                  <ProductCard p={p} setCart={setCart} cart={cart}></ProductCard>
-                ))}
-              </Box>
-           
-            </Stack>
-          </Box>
-        </Flex>
+
+        </Stack>
 
 
       </Box>

@@ -1,15 +1,81 @@
 import jwt
 import os
 import bcrypt
+from functools import wraps
+from flask import request, abort
+from modals.userModel import Users as User
 
-def verify_jwt_token(token):
-    try:
-        payload = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=['HS256'])
-        return payload
-    except jwt.ExpiredSignatureError:
-        return {'error': 'Token has expired'}
-    except jwt.InvalidTokenError:
-        return {'error': 'Invalid token'}
+def verify_jwt_token(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        try:
+            token= None
+            print(request)
+            if "Authorization" in request.headers:
+                print(request.headers)  
+                if len(request.headers["Authorization"].split(" "))>1:
+                    token = request.headers["Authorization"].split(" ")[1]
+            if not token:
+                return {
+                    "message": "Authentication Token is missing!",
+                    "data": None,
+                    "error": "Unauthorized"
+                }, 401
+            
+            payload = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=['HS256'])
+            current_user=User.objects(email=payload["email"])
+            if current_user.role!=1:
+                return {
+                "message": "Only admin can access this endpoint!",
+                "data": None,
+                "error":  "Unauthorized"
+                }, 401
+            if current_user is None:
+                return {
+                "message": "Invalid Authentication token!",
+                "data": None,
+                "error":  "Unauthorized"
+                }, 401
+        except jwt.ExpiredSignatureError:
+            return {'error': 'Token has expired',"message": "Token has Expried!"},401
+        except jwt.InvalidTokenError:
+            return {'error': 'Invalid token,"message": "Invalid Authentication token!'},400
+        return f(*args, **kwargs)
+
+    return decorated
+
+def verify_user_jwt_token(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        try:
+            token= None
+            print(request)
+            if "Authorization" in request.headers:
+                print(request.headers)  
+                if len(request.headers["Authorization"].split(" "))>1:
+                    token = request.headers["Authorization"].split(" ")[1]
+            if not token:
+                return {
+                    "message": "Authentication Token is missing!",
+                    "data": None,
+                    "error": "Unauthorized"
+                }, 401
+            
+            payload = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=['HS256'])
+            current_user=User.objects(email=payload["email"])
+            if current_user is None:
+                return {
+                "message": "Invalid Authentication token!",
+                "data": None,
+                "error":  "Unauthorized"
+                }, 401
+        except jwt.ExpiredSignatureError:
+            return {'error': 'Token has expired',"message": "Token has Expried!"},401
+        except jwt.InvalidTokenError:
+            return {'error': 'Invalid token,"message": "Invalid Authentication token!'},400
+        return f(*args, **kwargs)
+
+    return decorated
 
 def hash_password(password):
     try:

@@ -15,14 +15,7 @@ function Home() {
 
       <HomeCarousel />
       <Stack mx={4} spacing={4} direction={{ lg: "row", md: "column", base: "column" }}>
-        {/* <Box>
-          <FourBoxesLayout />
-          <HomeProducts />
-        </Box>
-        <Box>
-          <HomeFeatures />
-        </Box> */}
-
+       
         <Box flex={{ lg: 3, md: "100%", base: "100%" }}>
           <HomeProducts />
           <FourBoxesLayout />

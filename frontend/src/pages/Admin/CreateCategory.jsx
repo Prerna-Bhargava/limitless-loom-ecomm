@@ -33,6 +33,7 @@ import {
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import CategoryForm from "../../components/forms/CategoryForm";
+import { useAuth } from "../../context/auth";
 function CreateCategory() {
   const finalRef = React.useRef(null)
   const { register, handleSubmit, getValues, reset, control, formState: { errors } } = useForm();
@@ -41,12 +42,18 @@ function CreateCategory() {
   const [updatedName, setUpdatedName] = useState("");
   const [updatedGroup, setUpdatedGroup] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [auth] = useAuth()
   //handle Form
   const onSubmit = async categoryData => {
     console.log(categoryData)
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
       const { data } = await axios.post("category",
-        categoryData,
+        categoryData, config
       );
       if (data?.success) {
         toast.success(`Category ${categoryData.name} is created`)
@@ -83,12 +90,17 @@ function CreateCategory() {
 
   const handleUpdate = async (e) => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
       const { data } = await axios.put(
         `category/${selected.id}`,
         {
           name: updatedName,
           group: updatedGroup
-        }
+        }, config
       );
       if (data?.success) {
         toast.success(`${updatedName} is updated`);
@@ -108,8 +120,13 @@ function CreateCategory() {
   //delete category
   const handleDelete = async (pId) => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
       const { data } = await axios.delete(
-        `category/${pId}`
+        `category/${pId}`, config
       );
       if (data.success) {
         toast.success("Category is deleted")

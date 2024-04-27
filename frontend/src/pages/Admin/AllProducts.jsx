@@ -36,6 +36,7 @@ import { useTable, useSortBy } from "react-table";
 import axios from "axios";
 import ProductForm from "../../components/forms/ProductForm";
 import toast from "react-hot-toast";
+import { useAuth } from "../../context/auth";
 
 const productsData = [
   {
@@ -77,8 +78,8 @@ function Products() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selected, setSelected] = useState(null)
   const [productupdatedData, updateProductData] = useState({})
+  const [auth] = useAuth()
 
 
   let data = filteredProducts;
@@ -96,9 +97,14 @@ function Products() {
 
   const handleUpdate = async (e) => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
       const { data } = await axios.put(
         `product/${productupdatedData.id}`,
-        productupdatedData
+        productupdatedData, config
       );
       if (data?.success) {
         toast.success(`${productupdatedData.name} is updated`);
@@ -116,8 +122,13 @@ function Products() {
   //delete category
   const handleDelete = async (pId) => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
       const { data } = await axios.delete(
-        `product/${pId}`
+        `product/${pId}`, config
       );
       if (data.success) {
         toast.success("Product is deleted")
@@ -197,8 +208,13 @@ function Products() {
 
   //get all cat
   const getAllProduct = async () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+      }
+    }
     try {
-      const { data } = await axios.get("product/list");
+      const { data } = await axios.get("product/list", config);
       console.log("prod", data)
       if (data?.success) {
         setProducts(data?.product);

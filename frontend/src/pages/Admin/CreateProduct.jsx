@@ -15,6 +15,7 @@ import {
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../../context/auth";
 
 function CreateProduct() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function CreateProduct() {
   const [quantity, setQuantity] = useState("");
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
+  const [auth] = useAuth()
 
   //get all category
   const getAllCategory = async () => {
@@ -76,6 +78,11 @@ function CreateProduct() {
     e.preventDefault();
     try {
 
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+        }
+      }
 
       console.log(shipping)
       const { data } = await axios.post(
@@ -89,7 +96,7 @@ function CreateProduct() {
           "category": category,
           "shipping": shipping,
           "slug": slug
-        }
+        }, config
       );
       console.log("data", data);
       if (data?.success) {

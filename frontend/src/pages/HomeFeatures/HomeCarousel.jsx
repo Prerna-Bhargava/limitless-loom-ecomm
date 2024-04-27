@@ -32,9 +32,10 @@ export default function Carousel() {
   const fetchImages = async (e) => {
    
     setCards([
-      "https://bit.ly/3ITGAs6",
-      "https://bit.ly/3yhR3sB",
+      "https://m.media-amazon.com/images/I/61P7hqIHrdL._SX3000_.jpg",
       "https://bit.ly/3L83TBc",
+      "https://m.media-amazon.com/images/I/61zAjw4bqPL._SX3000_.jpg",
+      "https://m.media-amazon.com/images/I/61CiqVTRBEL._SX3000_.jpg"
     ])
     // try {
     //   const res = await axios.get(" /advertisements");
@@ -57,7 +58,7 @@ export default function Carousel() {
 
 
   return (
-    <Box position={"relative"} height="100%" width={"full"} overflow={"hidden"}>
+    <Box position={"relative"} height="350px" width={"full"} overflow={"hidden"}>
       {/* for arrows css */}
       <link
         rel="stylesheet"

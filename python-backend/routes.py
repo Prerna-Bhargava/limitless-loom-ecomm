@@ -1,16 +1,16 @@
 from flask import jsonify, request
 from tasks import get_task_by_id, create_task
 from modals.userModel import Users
+from controllers.authHandlers import verify_jwt_token,verify_user_jwt_token
 from controllers.category import addCategory, get_all_categories,update_category,delete_category,get_single_category,get_group_products
 from controllers.productCategory import update_product,delete_product,get_all_trending, addproduct, get_all_product,get_product_with_categoryslug,get_single_product,get_price_ranges
 from controllers.userController import update_profile,google_callback,register,login,reset_password,get_single_user,delete_user,get_all_user
-from controllers.orderHandlers import addOrder,update_order,get_all_Orders,get_single_order,get_user_orders
+from controllers.orderHandlers import update_rating,addOrder,update_order,get_all_Orders,get_single_order,get_user_orders
 def configure_routes(app):
     
     @app.route('/', methods=['GET'])
     def connect():
         return jsonify({'msg':"connected to app"}), 200
-    
 
     # User Routes
     @app.route('/auth/google/callback', methods=['POST'])
@@ -50,6 +50,7 @@ def configure_routes(app):
 
     # Category Routes
     @app.route('/category', methods=['POST'])
+    @verify_jwt_token
     def add_category():
         return addCategory(request)
     
@@ -58,6 +59,7 @@ def configure_routes(app):
         return get_all_categories()
     
     @app.route('/category/<string:id>', methods=['PUT'])
+    @verify_jwt_token
     def updatecategory(id):
         return update_category(request,id)
     
@@ -67,6 +69,7 @@ def configure_routes(app):
         return get_single_category(id)
     
     @app.route('/category/<string:id>', methods=['DELETE'])
+    @verify_jwt_token
     def deletecatgory(id):
         return delete_category(id)
     
@@ -78,14 +81,17 @@ def configure_routes(app):
 
     # product Routes
     @app.route('/product', methods=['POST'])
+    @verify_jwt_token
     def add_product():
         return addproduct(request)
     
     @app.route('/product/<string:id>', methods=['PUT'])
+    @verify_jwt_token
     def update_prod(id):
         return update_product(request,id)
     
     @app.route('/product/<string:id>', methods=['DELETE'])
+    @verify_jwt_token
     def delete_prod(id):
         return delete_product(id)
     
@@ -117,17 +123,27 @@ def configure_routes(app):
 
      # Category Routes
     @app.route('/order/create', methods=['POST'])
+    @verify_jwt_token
     def add_order():
         return addOrder(request)
     
     @app.route('/order/list', methods=['GET'])
+    @verify_jwt_token
     def get_all():
         return get_all_Orders()
     
     @app.route('/order/<string:id>', methods=['PUT'])
+    @verify_jwt_token
     def updateorder(id):
         return update_order(request,id)
     
+    @app.route('/order/rating/<string:id>', methods=['PUT'])
+    @verify_user_jwt_token
+    def updaterating(id):
+        return update_rating(request,id)
+    
+
     @app.route('/order/list/<string:id>', methods=['GET'])
+    @verify_user_jwt_token
     def user_order(id):
         return get_user_orders(id)
