@@ -156,6 +156,10 @@ def configure_routes(app):
     
     # recommendations
 
+    @app.route('/product/toprated', methods=['POST'])
+    def get_all_rated():
+        return get_all_top_rated(request)
+
     @app.route('/product/user/list/<string:id>', methods=['GET'])
     def get_recommendation(id):
         return get_recommended_products(id)

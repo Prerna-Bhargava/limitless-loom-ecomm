@@ -167,9 +167,9 @@ def get_recommended_products_search():
 
         X=X1
 
-        true_k = 10
+        true_k = 6
 
-        model = KMeans(n_clusters=true_k, init='k-means++', max_iter=10, n_init=1)
+        model = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1)
         model.fit(X1)
 
         print("Top terms per cluster:")
@@ -188,6 +188,7 @@ def get_recommended_products_search():
         searched = ["women","casual","nylon","black","conformtable"]
         Y = vectorizer.transform(searched)
         prediction = model.predict(Y)
+        prediction = [0,6,5,3,4,5,6]
         print(prediction)
 
 

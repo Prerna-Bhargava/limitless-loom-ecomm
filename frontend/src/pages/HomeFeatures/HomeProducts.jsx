@@ -19,12 +19,14 @@ import { useCart } from "../../context/cart";
 // import { Prices } from "../components/Prices";
 
 import { AiOutlineReload } from "react-icons/ai";
+import Recommended from "../../components/recommendations/Recommended";
 
 function HomeProducts() {
   const navigate = useNavigate();
   const [cart, setCart] = useCart();
 
   const [filteredProduct, setfilterProduct] = useState([])
+  const [ratedProduct, setRatedProduct] = useState([])
 
   const [categories, setCategories] = useState([]);
   const [categoryFilter, setCategoryFilter] = useState([]);
@@ -59,6 +61,8 @@ function HomeProducts() {
   useEffect(() => {
     getAllCategory();
     getAllProducts();
+    getAllTopRatedProducts();
+
   }, []);
   //get products
   const getAllProducts = async () => {
@@ -69,7 +73,7 @@ function HomeProducts() {
         "product/trending",
         {
           "page": 1,
-          "size": 12,
+          "size": 8,
           "category": categoryFilter,
           "price": priceFilter
         }
@@ -83,9 +87,31 @@ function HomeProducts() {
     }
   };
 
+  const getAllTopRatedProducts = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        "product/toprated",
+        {
+          "page": 1,
+          "size": 5,
+          "category": categoryFilter,
+          "price": priceFilter
+        }
+      );
+      console.log(data)
+      setRatedProduct(data.product)
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
 
   useEffect(() => {
     getAllProducts();
+    getAllTopRatedProducts();
   }, [priceFilter, categoryFilter]);
 
 
@@ -112,15 +138,26 @@ function HomeProducts() {
 
       <Box className="home_products_page">
 
+        <Box className="home_products">
+          <Text mt={8} fontSize="2xl" ml={8} fontWeight="bold">Top Rated Products</Text>
+          {ratedProduct?.map((p) => (
+            <ProductCard p={p} setCart={setCart} cart={cart}></ProductCard>
+          ))}
+        </Box>
+
+        <Recommended />
+
         <Stack direction={isSmallScreen ? "column" : "row"}>
           <Box flex={3}>
             <Stack direction="column">
               <Box className="home_products">
-                <Text mt={8} fontSize="2xl" fontWeight="bold">Trending(Most ordered) Products</Text>
+                <Text mt={8} ml={8} fontSize="2xl" fontWeight="bold">Trending(Most ordered) Products</Text>
                 {filteredProduct?.map((p) => (
                   <ProductCard p={p} setCart={setCart} cart={cart}></ProductCard>
                 ))}
               </Box>
+
+
 
             </Stack>
           </Box>
@@ -168,7 +205,9 @@ function HomeProducts() {
             </Stack>
           </Box>
 
+
         </Stack>
+
 
 
       </Box>
