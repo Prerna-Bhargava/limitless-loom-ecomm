@@ -1,7 +1,9 @@
 from flask import jsonify
 from modals.orderModel import Orders 
+from modals.userProductRatingModel import Rating
 from bson import ObjectId  # Import ObjectId from bson
 from modals.productModel import Products as Product
+from mongoengine.queryset.visitor import Q
 
 
 def addOrder(request):
@@ -23,6 +25,13 @@ def addOrder(request):
      
         order = Orders(products=products,buyer=user,delivery_address = address,email=mail,payment=payment,city=city,pin=pin)
         order.save()
+
+        orderid=str(order.id)
+
+        for product in products:
+            ratedProd = Rating(userId=user,productId=product,order=orderid)
+            ratedProd.save()
+
         response =  {
             'success': True,
             'message': 'Order created Successfully',
@@ -73,11 +82,17 @@ def update_rating(request, id):
 
         if not category:
             return jsonify({'success': False, 'message': 'Order not found'}), 404  # 404 Not Found
-
        
         # Update average rating for each product
         for prod in category.products:
+    
             print(prod)
+            print(prod.id)
+            ratedProd = Rating.objects(Q(productId=str(prod.id)) & Q(order=str(id))).first()
+            ratedProd.rating=rating
+            ratedProd.save()
+
+
             product = Product.objects(id=ObjectId(prod.id)).first()
             if category.rating==0:
                 total_ratings = product.rating + rating

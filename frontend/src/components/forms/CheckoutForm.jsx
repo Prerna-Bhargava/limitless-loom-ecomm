@@ -68,8 +68,15 @@ function CheckoutForm() {
 
         setLoading(true)
         try {
+
+            const config = {
+                headers: {
+                  Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
+                }
+              }
+
             let url = `/order/create`
-            const { data } = await axios.post(url, ProductData);
+            const { data } = await axios.post(url, ProductData,config);
             console.log("data = ", data)
             if (data?.success) {
                 toast.success("Order placed!");

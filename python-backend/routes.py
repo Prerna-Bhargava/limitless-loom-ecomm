@@ -1,11 +1,13 @@
 from flask import jsonify, request
 from tasks import get_task_by_id, create_task
 from modals.userModel import Users
+from controllers.recommendation import get_all_top_rated,get_recommended_products,get_recommended_products_search
 from controllers.authHandlers import verify_jwt_token,verify_user_jwt_token
 from controllers.category import addCategory, get_all_categories,update_category,delete_category,get_single_category,get_group_products
 from controllers.productCategory import get_matching_products,update_product,delete_product,get_all_trending, addproduct, get_all_product,get_product_with_categoryslug,get_single_product,get_price_ranges
 from controllers.userController import update_profile,google_callback,register,login,reset_password,get_single_user,delete_user,get_all_user
 from controllers.orderHandlers import update_rating,addOrder,update_order,get_all_Orders,get_single_order,get_user_orders
+
 def configure_routes(app):
     
     @app.route('/', methods=['GET'])
@@ -127,7 +129,7 @@ def configure_routes(app):
 
      # Category Routes
     @app.route('/order/create', methods=['POST'])
-    @verify_jwt_token
+    @verify_user_jwt_token
     def add_order():
         return addOrder(request)
     
@@ -151,3 +153,13 @@ def configure_routes(app):
     @verify_user_jwt_token
     def user_order(id):
         return get_user_orders(id)
+    
+    # recommendations
+
+    @app.route('/product/user/list/<string:id>', methods=['GET'])
+    def get_recommendation(id):
+        return get_recommended_products(id)
+    
+    @app.route('/product/user/list/search', methods=['GET'])
+    def get_recommendation_search():
+        return get_recommended_products_search()
