@@ -38,14 +38,19 @@ import axios from "axios";
 import CartProducts from "../cart/CartProducts";
 import { useAuth } from "../../context/auth";
 import Profile from "../profile/Profile";
+import SearchProducts from "../search/SearchProducts";
 
 function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
   const [categories, setCategories] = React.useState([]);
   const [visible, setVisible] = useState(false)
+  const [search_param, setSearchParam] = useState("")
   const [cart] = useCart();
   const [auth] = useAuth();
   const navigate = useNavigate();
+
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
 
   React.useEffect(() => {
     const fetchCategories = async () => {
@@ -107,7 +112,7 @@ function Navbar() {
 
           {auth?.user && auth.user.admin == 1 &&
             <Box onClick={() => setVisible(true)}>
-              <Text onClick={() => {navigate("/admin")}} _hover={{
+              <Text onClick={() => { navigate("/admin") }} _hover={{
                 "cursor": "pointer"
               }} fontSize="md" fontWeight="semibold" ml={8} my={4}>Admin Panel</Text>
             </Box>
@@ -123,18 +128,24 @@ function Navbar() {
                   focusBorderColor="teal.500"
                   type="text"
                   placeholder="Search Product"
+                  value={search_param}
+                  onChange={(e) => setSearchParam(e.target.value)}
                 />
-                <IconButton
-                  type="submit"
-                  mx={3}
-                  colorScheme="teal"
-                  aria-label="Search database"
-                  onClick={(e) => {
-                    console.log(e)
-                  }}
-                  icon={<SearchIcon />}
-                />
+
+                <RouterLink to={`/product/search?param=${search_param}`} >
+                  <IconButton
+                    type="button"
+                    mx={3}
+                    colorScheme="teal"
+                    aria-label="Search database"
+                    onClick={(e) => {
+                      setShowSearchResults(true)
+                    }}
+                    icon={<SearchIcon />}
+                  />
+                </RouterLink>
               </InputGroup>
+              {/* <SearchProducts search_param={search_param} /> */}
             </Stack>
           </form>
         </Stack>
@@ -355,7 +366,7 @@ const MobileNav = ({ categories }) => {
                   mx={3}
                   colorScheme="teal"
                   aria-label="Search database"
-
+                  // onClick={sh}
                   icon={<SearchIcon />}
                 />
               </Stack>

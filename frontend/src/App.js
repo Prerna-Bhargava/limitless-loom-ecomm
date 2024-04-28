@@ -17,6 +17,7 @@ import { useAuth } from "./context/auth";
 import Checkout from "./pages/checkout/Checkout";
 import Myorders from "./pages/orders/Myorders";
 import NotFound from "./pages/notfound/NotFound";
+import SearchProducts from "./components/search/SearchProducts";
 
 
 function App() {
@@ -51,7 +52,7 @@ function App() {
 
 
 
-
+          <Route path="/product/search" element={<SearchProducts />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgetPassword" element={<ForgetPassword />} />

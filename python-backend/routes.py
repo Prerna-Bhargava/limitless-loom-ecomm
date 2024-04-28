@@ -3,7 +3,7 @@ from tasks import get_task_by_id, create_task
 from modals.userModel import Users
 from controllers.authHandlers import verify_jwt_token,verify_user_jwt_token
 from controllers.category import addCategory, get_all_categories,update_category,delete_category,get_single_category,get_group_products
-from controllers.productCategory import update_product,delete_product,get_all_trending, addproduct, get_all_product,get_product_with_categoryslug,get_single_product,get_price_ranges
+from controllers.productCategory import get_matching_products,update_product,delete_product,get_all_trending, addproduct, get_all_product,get_product_with_categoryslug,get_single_product,get_price_ranges
 from controllers.userController import update_profile,google_callback,register,login,reset_password,get_single_user,delete_user,get_all_user
 from controllers.orderHandlers import update_rating,addOrder,update_order,get_all_Orders,get_single_order,get_user_orders
 def configure_routes(app):
@@ -99,6 +99,10 @@ def configure_routes(app):
     @app.route('/product/list', methods=['GET'])
     def get_all_prod():
         return get_all_product()
+    
+    @app.route('/product/search', methods=['GET'])
+    def get_matching_product():
+        return get_matching_products()
     
      
     @app.route('/product/trending', methods=['POST'])

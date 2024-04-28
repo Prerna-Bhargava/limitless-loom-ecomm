@@ -224,6 +224,28 @@ def get_product_with_categoryslug(slug):
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500  # 500 Internal Server Error
 
 
+# Get Single product
+def get_matching_products():
+    try:
+
+      
+        searchquery = request.args.get('search_param')
+        products = Product.objects(name__icontains=searchquery).all()
+      
+        response = {
+            'success': True,
+            'message': 'Get product by category Successfull',
+            'product': [product.to_json() for product in products]
+        }
+
+        return jsonify(response), 200  # 200 OK
+
+    except Exception as e:
+        # Log the exception for debugging purposes
+        print(f"Error in get_single_product_controller: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500  # 500 Internal Server Error
+
+
 # Get All product trending sort based on totalPurchased. Paginated
 def get_all_trending(request):
     try:
