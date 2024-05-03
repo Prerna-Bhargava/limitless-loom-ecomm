@@ -48,13 +48,11 @@ function CreateProduct() {
   }, []);
 
   const handleImageUpload = (e) => {
-    console.log("converting image")
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         const imageDataUrl = reader.result;
-        console.log("new image ", imageDataUrl)
         setPhoto(imageDataUrl);
       };
       reader.readAsDataURL(file);

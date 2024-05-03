@@ -8,38 +8,6 @@ import { Link as RouterLink } from "react-router-dom";
 import { StarIcon } from '@chakra-ui/icons';
 import { useCart } from '../../context/cart';
 
-// Dummy data
-const products = [
-  {
-    id: 1,
-    category: 'Electronics',
-    name: 'Smartphone',
-    price: '$599',
-    imageSrc: 'https://dummyimage.com/150x150/3498db/ffffff',
-  },
-  {
-    id: 2,
-    category: 'Electronics',
-    name: 'Laptop',
-    price: '$999',
-    imageSrc: 'https://dummyimage.com/150x150/2ecc71/ffffff',
-  },
-  {
-    id: 1,
-    category: 'Toys',
-    name: 'Elephant',
-    price: '$10',
-    imageSrc: 'https://m.media-amazon.com/images/I/81ZB62prn-L._AC_SY400_.jpg',
-  },
-  {
-    id: 2,
-    category: 'Toys',
-    name: 'Junior Ring',
-    price: '$999',
-    imageSrc: '	https://m.media-amazon.com/images/W/MEDIAX_792452-T2/images/I/61XC4-QDkKL._SX425_.jpg',
-  },
-  // Add more dummy data as needed
-];
 
 function ProductCategory() {
   const { category } = useParams();
@@ -145,7 +113,7 @@ function ProductCategory() {
 
           <Box order={isSmallScreen ? 2 : 1} >
 
-            <Box marginLeft="-2rem">
+            <Box marginLeft={isSmallScreen ? "1rem" : "-2rem"}>
               <Text fontSize={"3xl"}
                 fontWeight={500} mb={4}>
                 Products for You
@@ -207,7 +175,7 @@ function ProductCategory() {
             </Box>
           </Box>
 
-          <Grid  order={isSmallScreen ? 1 : 2} flex={3} templateColumns={{
+          <Grid order={isSmallScreen ? 1 : 2} flex={3} templateColumns={{
             base: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
             lg: "repeat(3, 1fr)",
@@ -217,7 +185,7 @@ function ProductCategory() {
                 to={`/product/single/${product.id}`}
                 role={"group"}
                 display={"block"}
-              
+
                 rounded={"md"}
                 _hover={{ bg: "teal.50" }}
               >

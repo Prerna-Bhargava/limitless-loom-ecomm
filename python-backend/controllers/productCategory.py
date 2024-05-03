@@ -20,6 +20,8 @@ def addproduct(request):
 
      if not name:
           return jsonify({'message': 'Name is required '}), 401
+     if not category or category == "":
+          return jsonify({'message': 'Category is required '}), 401
      product = Product.objects(name=name).first()
      if product:
             return jsonify({'message': 'product already exists'}), 400
@@ -125,7 +127,6 @@ def delete_product(id):
 # Get All product
 def get_all_product():
     try:
-        print("hry")
         products = Product.objects().all()
         response = {
             'success': True,

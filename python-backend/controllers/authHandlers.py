@@ -4,6 +4,7 @@ import bcrypt
 from functools import wraps
 from flask import request, abort
 from modals.userModel import Users as User
+from flask import jsonify
 
 def verify_jwt_token(f):
     @wraps(f)
@@ -23,7 +24,8 @@ def verify_jwt_token(f):
                 }, 401
             
             payload = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=['HS256'])
-            current_user=User.objects(email=payload["email"])
+            current_user=User.objects(email=payload["email"]).get()
+            print(current_user)
             if current_user.role!=1:
                 return {
                 "message": "Only admin can access this endpoint!",

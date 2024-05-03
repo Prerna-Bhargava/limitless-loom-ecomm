@@ -56,7 +56,7 @@ function Recommended() {
     return (
         <>
 
-            <Box className="home_products_page">
+            <Box className="home_products_page" textAlign="left">
 
                 {filteredProduct.length > 0 &&
                     <Stack direction={isSmallScreen ? "column" : "row"}>

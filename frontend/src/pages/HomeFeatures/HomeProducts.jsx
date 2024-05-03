@@ -12,6 +12,7 @@ import {
   Divider,
   Flex,
   useBreakpointValue,
+  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -136,18 +137,19 @@ function HomeProducts() {
     <>
       {/* <HomeProductFilter /> */}
 
-      <Box className="home_products_page">
+      <Box className="home_products_page" textAlign="center">
 
-        <Box className="home_products">
+        {loading && <Spinner />}
+        {!loading && <Box className="home_products">
           <Text mt={8} fontSize="2xl" ml={8} fontWeight="bold">Top Rated Products</Text>
           {ratedProduct?.map((p) => (
             <ProductCard p={p} setCart={setCart} cart={cart}></ProductCard>
           ))}
-        </Box>
+        </Box>}
 
         <Recommended />
 
-        <Stack direction={isSmallScreen ? "column" : "row"}>
+        {!loading && <Stack direction={isSmallScreen ? "column" : "row"}>
           <Box flex={3}>
             <Stack direction="column">
               <Box className="home_products">
@@ -206,7 +208,7 @@ function HomeProducts() {
           </Box>
 
 
-        </Stack>
+        </Stack>}
 
 
 

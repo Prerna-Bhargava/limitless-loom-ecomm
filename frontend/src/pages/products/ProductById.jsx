@@ -43,9 +43,9 @@ function ProductById() {
 
             </Box>
 
-            <Flex mb={5} color='white' flexDir={['column', 'row']}>
+            <Flex mb={5} color='white' flexDir={['column', 'column','row']} pr={14}>
 
-                <Box flex={['1', null, 'initial']} display='flex' alignItems='center' justifyContent='center' minW='50%'>
+                <Box flex={['1', '0', 'initial']} display='flex' alignItems='center' justifyContent='center' minW='50%'>
                     <Image src={Products.photo} maxWidth="500px" minWidth="100px" _hover={{
                         transform: 'scale(1.2)', // Zoom effect
                         transition: 'transform 0.3s ease-in-out' // Smooth transition
@@ -53,7 +53,7 @@ function ProductById() {
 
                 </Box>
 
-                <Box flex={['1', null, 'initial']} m={3} color='black' minW='50%' >
+                <Box flex={['1', '0', 'initial']} m={3} color='black' minW='50%' >
                     <Heading as='h2' size='lg'>
                         {Products.name}
                     </Heading>
