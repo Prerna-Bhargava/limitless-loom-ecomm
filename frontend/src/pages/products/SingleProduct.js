@@ -7,8 +7,11 @@ function SingleProduct({ product }) {
         <Link to={`/product/category/${product.category.slug}`}>
             <Box p={1} rounded="md">
                 <Box
-                    width="9rem"
-                    height="7rem"
+                    // width="9rem"
+                    // height="7rem"
+                    width={{ base: '9rem', sm: '9rem', md: '9rem', lg: '8rem' }}
+                    height={{ base: '9rem', sm: '9rem', md: '7rem', lg: '7rem' }}
+
                     backgroundImage={product.photo}
                     _hover={{
                         transform: 'scale(1.1)', // Zoom effect

@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout/Layout';
 import { useLocation, useParams } from 'react-router-dom';
-import { Box, Button, Divider, Flex, Grid, Heading, Image, Input, Radio, RadioGroup, Spinner, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Grid, Heading, IconButton, Image, Input, Radio, RadioGroup, Spinner, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { Link as RouterLink } from "react-router-dom";
 import { StarIcon } from '@chakra-ui/icons';
 import { useCart } from '../../context/cart';
+import { useWishlist } from '../../context/wishlist';
+import wishlisticon from "../../img/wishlist.png"
 
 
 function ProductCategory() {
   const { category } = useParams();
   const [cart, setCart] = useCart();
+  const [wishlist,setWishlist] = useWishlist();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const queryValue = queryParams.get('search');
+
+
+  localStorage.setItem("search", JSON.stringify([...JSON.parse(localStorage.getItem("search") || '[]'), category]));
 
 
   const [Products, setProducts] = useState([])
@@ -216,9 +222,18 @@ function ProductCategory() {
                         />
                       ))}
 
+
                   </Box>
 
                   <Stack direction='row' spacing={4} align='center'>
+
+                    <IconButton onClick={() => {
+                      setWishlist([...wishlist, product]);
+                      localStorage.setItem("wishlist", JSON.stringify([...wishlist, product]));
+                      toast.success("Item Added to wishlist");
+                    }} icon={<Image src={wishlisticon} width="30px" />} />
+
+
 
                     <Button colorScheme='teal' variant='outline' onClick={() => {
                       setCart([...cart, product]);

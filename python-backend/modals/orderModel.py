@@ -10,7 +10,7 @@ class Orders(db.Document):
     delivery_address = db.StringField(required=True)
     city = db.StringField()
     pin = db.StringField()
-    rating=db.IntField(default=0)
+    rating=db.ListField(db.DictField()) 
     email = db.StringField(required=True)
     status = db.StringField(default="Not Process", choices=["Not Process", "Processing", "Shipped", "delivered", "cancel"])
     createdAt = db.DateTimeField(default=datetime.utcnow)  # Set default value to current time

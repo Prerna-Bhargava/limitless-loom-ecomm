@@ -286,7 +286,7 @@ function AllOrders() {
               <option value="Not process">Not Process</option>
               <option value="Processing">Processing</option>
               <option value="Shipped">Shipped</option>
-              <option value="Deliverd">Deliverd</option>
+              <option value="delivered">delivered</option>
               <option value="Cancel">Cancel</option>
             </Select>
 

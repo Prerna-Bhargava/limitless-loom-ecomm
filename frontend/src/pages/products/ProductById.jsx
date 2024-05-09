@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../components/Layout/Layout';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, Heading, Image, ListItem, Radio, RadioGroup, Spinner, Square, Stack, Text, UnorderedList, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, Heading, IconButton, Image, ListItem, Menu, MenuButton, Radio, RadioGroup, Spinner, Square, Stack, Text, UnorderedList, useColorModeValue } from '@chakra-ui/react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { StarIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, StarIcon } from '@chakra-ui/icons';
 import { useCart } from '../../context/cart';
+import { useWishlist } from '../../context/wishlist';
+import wishlisticon from "../../img/wishlist.png"
+import ShowFeedBack from '../AddFeedBack/ShowFeedBack';
 
 function ProductById() {
     const { id } = useParams();
     const [cart, setCart] = useCart();
+    const [wishlist, setWishlist] = useWishlist();
     const navigate = useNavigate();
     const [Products, setProducts] = useState([])
     const [loading, setLoading] = useState(false)
@@ -43,7 +47,7 @@ function ProductById() {
 
             </Box>
 
-            <Flex mb={5} color='white' flexDir={['column', 'column','row']} pr={14}>
+            <Flex mb={5} color='white' flexDir={['column', 'column', 'row']} pr={14}>
 
                 <Box flex={['1', '0', 'initial']} display='flex' alignItems='center' justifyContent='center' minW='50%'>
                     <Image src={Products.photo} maxWidth="500px" minWidth="100px" _hover={{
@@ -108,7 +112,17 @@ function ProductById() {
                     </UnorderedList>
 
 
+    
+                    <ShowFeedBack comment={Products.comments} />
+
                     <Stack direction='row' spacing={4} align='center'>
+
+                        <IconButton onClick={() => {
+                            setWishlist([...wishlist, Products]);
+                            localStorage.setItem("wishlist", JSON.stringify([...wishlist, Products]));
+                            toast.success("Item Added to wishlist");
+                        }} icon={<Image src={wishlisticon} width="30px" />} />
+
 
                         <Button colorScheme='teal' variant='outline' onClick={() => {
                             setCart([...cart, Products]);
@@ -117,6 +131,9 @@ function ProductById() {
                         }}>
                             Add to Cart
                         </Button>
+
+
+
                         <Button variant='solid' bg={"teal.800"} color="white" _hover={{
                             bg: "teal.900",
                         }} onClick={() => {

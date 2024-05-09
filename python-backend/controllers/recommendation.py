@@ -12,6 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.neighbors import NearestNeighbors
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score
+from sklearn.metrics.pairwise import cosine_similarity
 
 print("inside recommendation")
 # Recommendation System - Popularity Based
@@ -136,96 +137,95 @@ def get_recommended_products(id):
 
     except Exception as e:
         # Log the exception for debugging purposes
-        print(f"Error in get recommended controller: {str(e)}")
+        print(f"Error in get recommended products controller: {str(e)}")
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500  
 
 
-# Get All product trending sort based on totalPurchased. Paginated
-def get_recommended_products_search():
+def get_recommended_products_search(request):
     try:
-
-        products = Product.objects().all()
-
-        data_list = []
-        for order in products:
-                data_list.append({
-                    'description': order.description,
-        })
-
-        df = pd.DataFrame(data_list)
-        print(df.head())
-
-        product_descriptions1 = df.head(500)
-        # product_descriptions1.iloc[:,1]
+        products = Product.objects()
+        descriptions = [product.description for product in products]
+        searched_terms = request.json.get('search')
+        print(searched_terms)
 
 
         vectorizer = TfidfVectorizer(stop_words='english')
-        X1 = vectorizer.fit_transform(product_descriptions1["description"])
-        X1
+        X = vectorizer.fit_transform(descriptions)
+        # searched_terms = ["belt"]
 
-        # Fitting K-Means to the dataset
+        # get searched terms for the user logged in or based on his cache
 
-        X=X1
+        search_vector = vectorizer.transform([" ".join(searched_terms)])
 
-        true_k = 6
+        # Calculate cosine similarity between search vector and product descriptions
+        cosine_similarities = cosine_similarity(search_vector, X)
 
-        model = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1)
-        model.fit(X1)
+        # Get top matching products based on similarity scores
+        top_matching_indices = np.argsort(cosine_similarities, axis=1)[0][::-1]
 
-        print("Top terms per cluster:")
-        order_centroids = model.cluster_centers_.argsort()[:, ::-1]
-        terms = vectorizer.get_feature_names_out()
-        print(len(terms))
-        # true_k = math.ceil(len(terms)/100)
-        for i in range(true_k):
-            print("Cluster %d:" % i),
-            for ind in order_centroids[i, :10]:
-                print(' %s' % terms[ind]),
-            print
-
-     
-        print("Cluster ID:")
-        searched = ["women","casual","nylon","black","conformtable"]
-        Y = vectorizer.transform(searched)
-        prediction = model.predict(Y)
-        prediction = [0,6,5,3,4,5,6]
-        print(prediction)
+        # Print the top matching products
+        for idx in top_matching_indices:
+            print(idx)
+        product_list = list(products)
 
 
-        products_df=[]
-        for cluster_id in prediction:
-            print(cluster_id)
-            term_indices = order_centroids[cluster_id]  
-            cluster_terms = [terms[ind] for ind in term_indices]  
-            print("terms are len is ", len(cluster_terms))
-            products = Product.objects().all()
-            product_data = []
-            for product in products:
-                matched_words = [word for word in cluster_terms if (word.lower() in product['description'].lower() )]
-       
-                product_data.append({
-                    'ProductId': product['id'],  # Assuming '_id' is the product ID field
-                    'Description': product['description'],  # Assuming 'description' is the product description field
-                    'MatchedWords': len(matched_words)
-                })
-            products_df = pd.DataFrame(product_data)
+        index_product_mapping = {idx: product for idx, product in enumerate(product_list)}
 
-        sorted_products = products_df.sort_values(by='MatchedWords', ascending=False).head(5)
-        print(sorted_products)
+        cluster_products = []
 
-        top_5_product_ids = sorted_products['ProductId'].tolist()
-        matching_products = Product.objects(id__in=top_5_product_ids).all()
+        # Print the top matching products
+        for idx in top_matching_indices:
+            product = index_product_mapping[idx]
+            cluster_products.append(product)
+            print(f"Product ID: {product.id}, Description: {product.name}")
 
+        # true_k = 5
+        # model = KMeans(n_clusters=true_k)
+        # model.fit(X)
+        # labels = model.labels_
+        # print("labels are ",labels)
+
+        # terms = vectorizer.get_feature_names_out()
+        # order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+
+
+        # keyword_vector = vectorizer.transform(searched_terms)
+        # print(keyword_vector)
+        # keyword_cluster = model.predict(keyword_vector)[0]
+        # cluster_products = [product for idx, product in enumerate(products) if labels[idx] == keyword_cluster]
+        # for product in cluster_products:
+        #     print(product.id)
+        
+
+
+        # Y = vectorizer.transform(searched_terms)
+        # prediction = model.predict(Y)
+        # print(prediction)
+
+        # recommended_products = set()
+
+        # for cluster_id in prediction:
+        #     term_indices = order_centroids[cluster_id]
+
+        #     cluster_terms = [terms[ind] for ind in term_indices]
+
+        #     print("terms at 0 cluster len is ", len(term_indices))
+
+            
+        #     for product in products:
+        #         if any(term.lower() in product.description.lower() for term in cluster_terms):
+        #             recommended_products.add(product.id)
+
+        # matching_products = Product.objects(id__in=list(recommended_products)).all()
 
         response = {
             'success': True,
-            'message': 'Top Rated Products',
-            'product': [product.to_json() for product in matching_products]
+            'message': 'Recommended Products',
+            'products': [product.to_json() for product in cluster_products]
         }
 
-        return jsonify(response), 200  # 200 OK
+        return jsonify(response), 200
 
     except Exception as e:
-        # Log the exception for debugging purposes
-        print(f"Error in get_all_product_controller: {str(e)}")
-        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500  
+        print(f"Error in get_recommended_products_search: {str(e)}")
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500

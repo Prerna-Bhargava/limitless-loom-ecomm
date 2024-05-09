@@ -125,6 +125,10 @@ function ProfileForm({ id, name, email, address }) {
                                 View Orders
                             </Button>
 
+                            <Button type="button" colorScheme='teal' variant='outline' onClick={()=>localStorage.removeItem("auth")} >
+                                Log Out
+                            </Button>
+
                         </Stack>
 
 

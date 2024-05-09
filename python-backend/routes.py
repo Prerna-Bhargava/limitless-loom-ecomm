@@ -6,7 +6,7 @@ from controllers.authHandlers import verify_jwt_token,verify_user_jwt_token
 from controllers.category import addCategory, get_all_categories,update_category,delete_category,get_single_category,get_group_products
 from controllers.productCategory import get_matching_products,update_product,delete_product,get_all_trending, addproduct, get_all_product,get_product_with_categoryslug,get_single_product,get_price_ranges
 from controllers.userController import update_profile,google_callback,register,login,reset_password,get_single_user,delete_user,get_all_user
-from controllers.orderHandlers import update_rating,addOrder,update_order,get_all_Orders,get_single_order,get_user_orders
+from controllers.orderHandlers import update_rating,addOrder,get_all_Orders,update_order,get_single_order,get_user_orders,update_comment
 
 def configure_routes(app):
     
@@ -154,6 +154,11 @@ def configure_routes(app):
     def user_order(id):
         return get_user_orders(id)
     
+
+    @app.route('/user/feedback', methods=['POST'])
+    def update_order_comment():
+        return update_comment(request)
+    
     # recommendations
 
     @app.route('/product/toprated', methods=['POST'])
@@ -164,6 +169,6 @@ def configure_routes(app):
     def get_recommendation(id):
         return get_recommended_products(id)
     
-    @app.route('/product/user/list/search', methods=['GET'])
+    @app.route('/product/user/list/search', methods=['POST'])
     def get_recommendation_search():
-        return get_recommended_products_search()
+        return get_recommended_products_search(request)

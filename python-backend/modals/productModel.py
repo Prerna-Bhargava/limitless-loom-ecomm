@@ -14,6 +14,7 @@ class Products(db.Document):
     quantity = db.IntField(required=True)
     photo = db.StringField(required=True)
     shipping = db.BooleanField()
+    comments = db.ListField(db.DictField()) 
     totalPurchased = db.IntField(default=0)
     createdAt = db.DateTimeField(default=datetime.utcnow)  # Set default value to current time
     updatedAt = db.DateTimeField(default=datetime.utcnow)  # Set default value to current time
@@ -32,7 +33,8 @@ class Products(db.Document):
             "quantity": self.quantity,
             "photo": self.photo,
             "shipping": self.shipping,
-            "rating": self.rating
+            "rating": self.rating,
+            "comments":self.comments,
         }
     
    

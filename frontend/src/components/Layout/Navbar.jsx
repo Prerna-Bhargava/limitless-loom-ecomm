@@ -39,6 +39,8 @@ import CartProducts from "../cart/CartProducts";
 import { useAuth } from "../../context/auth";
 import Profile from "../profile/Profile";
 import SearchProducts from "../search/SearchProducts";
+import WishlistProducts from "../wishlist/CartProducts";
+import { useWishlist } from "../../context/wishlist";
 
 function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
@@ -139,6 +141,8 @@ function Navbar() {
                     colorScheme="teal"
                     aria-label="Search database"
                     onClick={(e) => {
+                      console.log("searching")
+                      localStorage.setItem("search", JSON.stringify([...JSON.parse(localStorage.getItem("search") || '[]'), search_param]));
                       setShowSearchResults(true)
                     }}
                     icon={<SearchIcon />}
@@ -203,6 +207,8 @@ const DesktopNav = ({ categories }) => {
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
   const [cart] = useCart();
+  const [wishlist] =  useWishlist();
+
 
   return (
     <Stack direction={"row"} spacing={4}>
@@ -246,6 +252,8 @@ const DesktopNav = ({ categories }) => {
         </Center>
       ))}
       <CartProducts cart={cart} />
+      <WishlistProducts wishlist={wishlist}/>
+
 
 
     </Stack>
@@ -293,7 +301,8 @@ const DesktopSubNav = ({ name, slug, subLabel }) => {
 
 const MobileNav = ({ categories }) => {
   const [cart] = useCart();
-  const [auth] = useAuth()
+  const [auth] = useAuth();
+  const [wishlist] =  useWishlist();
   const [visible, setVisible] = useState(false)
 
   return (
@@ -308,6 +317,7 @@ const MobileNav = ({ categories }) => {
       ))}
 
       <CartProducts cart={cart} />
+      <WishlistProducts wishlist={wishlist}/>
 
       <Divider />
 
@@ -380,6 +390,8 @@ const MobileNav = ({ categories }) => {
 
 const MobileNavItem = ({ label, children, href, categories }) => {
   const { isOpen, onToggle } = useDisclosure();
+
+  const [wishlist] =  useWishlist();
 
   return (
     <Stack spacing={4} onClick={children && onToggle}>

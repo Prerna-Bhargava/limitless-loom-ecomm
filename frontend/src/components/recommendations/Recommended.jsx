@@ -33,6 +33,7 @@ function Recommended() {
 
     useEffect(() => {
         getAllProducts();
+        getAllSearchedProducts();
     }, [auth]);
     //get products
     const getAllProducts = async () => {
@@ -44,6 +45,32 @@ function Recommended() {
             );
             console.log(data)
             setfilterProduct(data.product)
+    
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+        }
+    };
+    const getAllSearchedProducts = async () => {
+        console.log("calling prodcts")
+        try {
+            setLoading(true);
+           
+            const {data} = await axios.post(
+                `product/user/list/search`,
+                {
+                    "search":localStorage.getItem("search")
+                }
+            );
+            console.log(data)
+         
+            {
+                const remainingLength = 5 - filteredProduct.length;
+                const productsToAdd = data.products.slice(0, remainingLength);
+                setfilterProduct([...filteredProduct, ...productsToAdd]);
+            }
+
             setLoading(false);
         } catch (error) {
             setLoading(false);

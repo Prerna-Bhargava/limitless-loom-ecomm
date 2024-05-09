@@ -8,28 +8,61 @@ import { calculateTotalPrice } from '../../utils/Utils'
 import { StarIcon } from '@chakra-ui/icons'
 import axios from 'axios'
 import { useAuth } from '../../context/auth'
+import AddFeedBack from '../AddFeedBack/AddFeedBack'
 
 function UserOrders({ Product }) {
 
     const [rating, setRating] = useState(Product.rating)
+    const [currentprod, setCurrentproduct] = useState()
     const [auth] = useAuth();
 
-    const handleStarClick = (clickedRating) => {
-        setRating(clickedRating);
-        updateRating(clickedRating); // Call the parent component's callback with the new rating
+    console.log("AUTH IS ", auth)
+
+    const handleStarClick = (clickedRating,productId) => {
+        console.log("prod is ",productId)
+        updateRating(clickedRating,productId); // Call the parent component's callback with the new rating
+
+        let itemExists=false
+        const updatedRatings = rating.map(item => {
+            if (item.prod === productId) {
+                itemExists=true
+                return { ...item, rating:clickedRating };
+            }
+            return item;
+        });
+
+        if (!itemExists) {
+            // Add the item with its prod field
+            updatedRatings.push({ prod: productId, rating: clickedRating });
+        }
+        setRating(updatedRatings);
+
+       
+
     };
 
-    const updateRating = async (clickedRating) => {
+    const getRatingForProduct = (prodId) => {
+
+        console.log(rating)
+        console.log(prodId)
+        const ratingItem = rating.find(item => item.prod === prodId);
+        console.log(ratingItem)
+        return ratingItem ? ratingItem.rating : 0; // Default to 0 if rating not found
+    };
+
+    const updateRating = async (clickedRating,productId) => {
         try {
             const config = {
                 headers: {
                     Authorization: `Bearer ${auth?.user?.token}`  // Assuming Bearer token authentication
                 }
             }
+            console.log("current product is empty" , currentprod)
             const { data } = await axios.put(
                 `order/rating/${Product.id}`,
                 {
-                    rating: clickedRating
+                    rating: clickedRating,
+                    productid: productId
                 }, config
             );
             if (data?.success) {
@@ -56,10 +89,10 @@ function UserOrders({ Product }) {
             >
 
                 {Product.products.map((product) => (
-                    <>
-                        <Box key={product.id} p={4} borderWidth="1px" borderRadius="md" overflow="hidden">
+                    <Stack>
+                        <Box key={product._id.$oid} p={4} borderWidth="1px" borderRadius="md" overflow="hidden">
                             <RouterLink
-                                to={`/product/single/${product.id}`}
+                                to={`/product/single/${product._id.$oid}`}
                                 role={"group"}
                                 display={"block"}
                                 p={2}
@@ -80,7 +113,25 @@ function UserOrders({ Product }) {
                             </RouterLink>
 
                         </Box>
-                    </>
+
+                        {Product.status == "delivered" && <Box display='flex' mt='3' alignItems='center' mb={3} >
+                            {Array(5)
+                                .fill('')
+                                .map((_, i) => (
+
+                                    <StarIcon
+                                        key={i}
+                                        color={i < getRatingForProduct(product._id.$oid) ? 'teal.500' : 'gray.300'}
+                                        onClick={() => { setCurrentproduct(product) ; handleStarClick(i + 1,product._id.$oid); }} // i + 1 because ratings start from 1
+                                        cursor="pointer"
+                                    />
+                                ))}
+
+                            {!product.comments.some(comment => comment.user_id == auth?.user?.id) && <AddFeedBack Product={product} />}
+
+                        </Box>
+                        }
+                    </Stack>
                 ))}
             </Grid>
 
@@ -106,22 +157,7 @@ function UserOrders({ Product }) {
             </Stack>
 
 
-            {Product.status == "delivered" && <Box display='flex' mt='3' alignItems='center' mb={3} >
-                {Array(5)
-                    .fill('')
-                    .map((_, i) => (
 
-                        <StarIcon
-                            key={i}
-                            color={i < rating ? 'teal.500' : 'gray.300'}
-                            onClick={() => handleStarClick(i + 1)} // i + 1 because ratings start from 1
-                            cursor="pointer"
-                        />
-                    ))}
-
-
-            </Box>
-            }
 
         </Box>
     )
